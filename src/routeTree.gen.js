@@ -3,137 +3,51 @@
 
 // Import Routes
 import { Route as rootRoute } from "./routes/__root";
-import { Route as IndexImport } from "./routes/index";
-import { Route as BookingImport } from "./routes/booking";
-import { Route as FacilityImport } from "./routes/facility";
-import { Route as HomeImport } from "./routes/home";
-import { Route as LoginImport } from "./routes/login";
-import { Route as LogoutImport } from "./routes/logout";
-import { Route as RegisterImport } from "./routes/register";
-import { Route as FacilitiesImport } from "./routes/facilities";
-import { Route as DashboardImport } from "./routes/dashboard/dashboard";
-import { Route as DashboardProfileImport } from "./routes/dashboard/profile";
-import { Route as DashboardFacilitiesImport } from "./routes/dashboard/facilities";
-import { Route as DashboardBookingsImport } from "./routes/dashboard/bookings";
-import { Route as DashboardReportsImport } from "./routes/dashboard/reports";
-import { Route as ExampleImport } from "./routes/example";
+import { Route as indexRoute } from "./routes/index";
+import { Route as dashboardRoute } from "./routes/dashboard";
+import { Route as dashboardIndexRoute } from "./routes/dashboard/index";
+import { Route as dashboardFacilitiesRoute } from "./routes/dashboard/facilities";
+import { Route as dashboardProfileRoute } from "./routes/dashboard/profile";
 
-// Create/Update Routes
-
-const ExampleRoute = ExampleImport.update({
-  id: "/example",
-  path: "/example",
-  getParentRoute: () => rootRoute,
-});
-
-const IndexRoute = IndexImport.update({
-  id: "/",
+// Configure the routes
+Object.assign(indexRoute.options, {
   path: "/",
   getParentRoute: () => rootRoute,
 });
 
-const BookingRoute = BookingImport.update({
-  id: "/booking",
-  path: "/booking",
-  getParentRoute: () => rootRoute,
-});
-
-const FacilityRoute = FacilityImport.update({
-  id: "/facility",
-  path: "/facility",
-  getParentRoute: () => rootRoute,
-});
-
-const HomeRoute = HomeImport.update({
-  id: "/home",
-  path: "/home",
-  getParentRoute: () => rootRoute,
-});
-
-const LoginRoute = LoginImport.update({
-  id: "/login",
-  path: "/login",
-  getParentRoute: () => rootRoute,
-});
-
-const LogoutRoute = LogoutImport.update({
-  id: "/logout",
-  path: "/logout",
-  getParentRoute: () => rootRoute,
-});
-
-const RegisterRoute = RegisterImport.update({
-  id: "/register",
-  path: "/register",
-  getParentRoute: () => rootRoute,
-});
-
-const FacilitiesRoute = FacilitiesImport.update({
-  id: "/facilities",
-  path: "/facilities",
-  getParentRoute: () => rootRoute,
-});
-
-const DashboardRoute = DashboardImport.update({
-  id: "/dashboard",
+Object.assign(dashboardRoute.options, {
   path: "/dashboard",
   getParentRoute: () => rootRoute,
 });
 
-const DashboardProfileRoute = DashboardProfileImport.update({
-  id: "/dashboard/profile",
-  path: "/dashboard/profile",
-  getParentRoute: () => rootRoute,
+Object.assign(dashboardIndexRoute.options, {
+  path: "/",
+  getParentRoute: () => dashboardRoute,
 });
 
-const DashboardFacilitiesRoute = DashboardFacilitiesImport.update({
-  id: "/dashboard/facilities",
-  path: "/dashboard/facilities",
-  getParentRoute: () => rootRoute,
+Object.assign(dashboardFacilitiesRoute.options, {
+  path: "/facilities",
+  getParentRoute: () => dashboardRoute,
 });
 
-const DashboardBookingsRoute = DashboardBookingsImport.update({
-  id: "/dashboard/bookings",
-  path: "/dashboard/bookings",
-  getParentRoute: () => rootRoute,
-});
-
-const DashboardReportsRoute = DashboardReportsImport.update({
-  id: "/dashboard/reports",
-  path: "/dashboard/reports",
-  getParentRoute: () => rootRoute,
+Object.assign(dashboardProfileRoute.options, {
+  path: "/profile",
+  getParentRoute: () => dashboardRoute,
 });
 
 // Create and export the route tree
-const rootRouteChildren = {
-  IndexRoute,
-  BookingRoute,
-  FacilityRoute,
-  HomeRoute,
-  LoginRoute,
-  LogoutRoute,
-  RegisterRoute,
-  FacilitiesRoute,
-  DashboardRoute,
-  DashboardProfileRoute,
-  DashboardFacilitiesRoute,
-  DashboardBookingsRoute,
-  DashboardReportsRoute,
-  ExampleRoute,
-};
-
-export const routeTree = rootRoute
-  ._addFileChildren(rootRouteChildren)
-  ._addFileTypes();
+export const routeTree = rootRoute.addChildren([
+  indexRoute,
+  dashboardRoute.addChildren([
+    dashboardIndexRoute,
+    dashboardFacilitiesRoute,
+    dashboardProfileRoute,
+  ]),
+]);
 
 export const routeManifest = {
   "/": {
     filePath: "routes/index.jsx",
-    parent: "/",
-    children: [],
-  },
-  "/example": {
-    filePath: "routes/example.jsx",
     parent: "/",
     children: [],
   },
@@ -145,36 +59,6 @@ export const routeManifest = {
   "/register": {
     filePath: "routes/register.jsx",
     parent: "/",
-    children: [],
-  },
-  "/dashboard": {
-    filePath: "routes/dashboard.jsx",
-    parent: "/",
-    children: [
-      "/dashboard/profile",
-      "/dashboard/facilities",
-      "/dashboard/bookings",
-      "/dashboard/reports",
-    ],
-  },
-  "/dashboard/profile": {
-    filePath: "routes/dashboard/profile.jsx",
-    parent: "/dashboard",
-    children: [],
-  },
-  "/dashboard/facilities": {
-    filePath: "routes/dashboard/facilities.jsx",
-    parent: "/dashboard",
-    children: [],
-  },
-  "/dashboard/bookings": {
-    filePath: "routes/dashboard/bookings.jsx",
-    parent: "/dashboard",
-    children: [],
-  },
-  "/dashboard/reports": {
-    filePath: "routes/dashboard/reports.jsx",
-    parent: "/dashboard",
     children: [],
   },
 };
@@ -214,6 +98,18 @@ export const routeManifest = {
     },
     "/register": {
       "filePath": "register.jsx"
+    },
+    "/dashboard": {
+      "filePath": "dashboard.jsx"
+    },
+    "/dashboard/": {
+      "filePath": "dashboard/index.jsx"
+    },
+    "/dashboard/facilities": {
+      "filePath": "dashboard/facilities.jsx"
+    },
+    "/dashboard/profile": {
+      "filePath": "dashboard/profile.jsx"
     }
   }
 }

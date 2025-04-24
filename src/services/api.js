@@ -56,7 +56,14 @@ export const api = {
         throw new Error(data.message || "Login failed");
       }
 
-      return data;
+      if (data.user && data.token) {
+        localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('token', data.token);
+        return {
+          user: data.user,
+          token: data.token,
+        };
+      }
     } catch (error) {
       console.error("Login error:", error);
       if (error.name === "TypeError" && error.message === "Failed to fetch") {

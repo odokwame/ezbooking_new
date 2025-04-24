@@ -1,17 +1,15 @@
 import { Outlet } from "@tanstack/react-router";
 import Sidebar from "./Sidebar";
-import Card from "../Card";
 
 const DashboardLayout = () => {
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-[calc(100vh-64px)]">
       <div className="flex">
-        <Sidebar />
-        <main className="flex-1 p-6">
+        <div className="w-64 flex-shrink-0">
+          <Sidebar />
+        </div>
+        <div className="flex-1 bg-gray-100">
           <Outlet />
-        </main>
-        <div className="flex-1 p-6">
-          <Card/>
         </div>
       </div>
     </div>

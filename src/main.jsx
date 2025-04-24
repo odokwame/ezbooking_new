@@ -11,16 +11,12 @@ import reportWebVitals from "./reportWebVitals.js";
 // Create a new router instance
 const router = createRouter({
   routeTree,
-  context: {},
   defaultPreload: "intent",
-  scrollRestoration: true,
-  defaultStructuralSharing: true,
-  defaultPreloadStaleTime: 0,
 });
 
 // Render the app
 const rootElement = document.getElementById("app");
-if (rootElement && !rootElement.innerHTML) {
+if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>

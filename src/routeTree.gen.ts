@@ -15,16 +15,14 @@ import { Route as RegisterImport } from './routes/register'
 import { Route as LogoutImport } from './routes/logout'
 import { Route as LoginImport } from './routes/login'
 import { Route as HomeImport } from './routes/home'
-import { Route as FacilityImport } from './routes/facility'
 import { Route as FacilitiesImport } from './routes/facilities'
 import { Route as ExampleImport } from './routes/example'
+import { Route as DashboardImport } from './routes/dashboard'
 import { Route as BookingImport } from './routes/booking'
 import { Route as IndexImport } from './routes/index'
-import { Route as DashboardReportsImport } from './routes/dashboard/reports'
+import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardProfileImport } from './routes/dashboard/profile'
 import { Route as DashboardFacilitiesImport } from './routes/dashboard/facilities'
-import { Route as DashboardDashboardImport } from './routes/dashboard/dashboard'
-import { Route as DashboardBookingsImport } from './routes/dashboard/bookings'
 
 // Create/Update Routes
 
@@ -52,12 +50,6 @@ const HomeRoute = HomeImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const FacilityRoute = FacilityImport.update({
-  id: '/facility',
-  path: '/facility',
-  getParentRoute: () => rootRoute,
-} as any)
-
 const FacilitiesRoute = FacilitiesImport.update({
   id: '/facilities',
   path: '/facilities',
@@ -67,6 +59,12 @@ const FacilitiesRoute = FacilitiesImport.update({
 const ExampleRoute = ExampleImport.update({
   id: '/example',
   path: '/example',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardRoute = DashboardImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -82,34 +80,22 @@ const IndexRoute = IndexImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
-const DashboardReportsRoute = DashboardReportsImport.update({
-  id: '/dashboard/reports',
-  path: '/dashboard/reports',
-  getParentRoute: () => rootRoute,
+const DashboardIndexRoute = DashboardIndexImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 const DashboardProfileRoute = DashboardProfileImport.update({
-  id: '/dashboard/profile',
-  path: '/dashboard/profile',
-  getParentRoute: () => rootRoute,
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 const DashboardFacilitiesRoute = DashboardFacilitiesImport.update({
-  id: '/dashboard/facilities',
-  path: '/dashboard/facilities',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardDashboardRoute = DashboardDashboardImport.update({
-  id: '/dashboard/dashboard',
-  path: '/dashboard/dashboard',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const DashboardBookingsRoute = DashboardBookingsImport.update({
-  id: '/dashboard/bookings',
-  path: '/dashboard/bookings',
-  getParentRoute: () => rootRoute,
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => DashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -130,6 +116,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardImport
+      parentRoute: typeof rootRoute
+    }
     '/example': {
       id: '/example'
       path: '/example'
@@ -142,13 +135,6 @@ declare module '@tanstack/react-router' {
       path: '/facilities'
       fullPath: '/facilities'
       preLoaderRoute: typeof FacilitiesImport
-      parentRoute: typeof rootRoute
-    }
-    '/facility': {
-      id: '/facility'
-      path: '/facility'
-      fullPath: '/facility'
-      preLoaderRoute: typeof FacilityImport
       parentRoute: typeof rootRoute
     }
     '/home': {
@@ -179,61 +165,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
-    '/dashboard/bookings': {
-      id: '/dashboard/bookings'
-      path: '/dashboard/bookings'
-      fullPath: '/dashboard/bookings'
-      preLoaderRoute: typeof DashboardBookingsImport
-      parentRoute: typeof rootRoute
-    }
-    '/dashboard/dashboard': {
-      id: '/dashboard/dashboard'
-      path: '/dashboard/dashboard'
-      fullPath: '/dashboard/dashboard'
-      preLoaderRoute: typeof DashboardDashboardImport
-      parentRoute: typeof rootRoute
-    }
     '/dashboard/facilities': {
       id: '/dashboard/facilities'
-      path: '/dashboard/facilities'
+      path: '/facilities'
       fullPath: '/dashboard/facilities'
       preLoaderRoute: typeof DashboardFacilitiesImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof DashboardImport
     }
     '/dashboard/profile': {
       id: '/dashboard/profile'
-      path: '/dashboard/profile'
+      path: '/profile'
       fullPath: '/dashboard/profile'
       preLoaderRoute: typeof DashboardProfileImport
-      parentRoute: typeof rootRoute
+      parentRoute: typeof DashboardImport
     }
-    '/dashboard/reports': {
-      id: '/dashboard/reports'
-      path: '/dashboard/reports'
-      fullPath: '/dashboard/reports'
-      preLoaderRoute: typeof DashboardReportsImport
-      parentRoute: typeof rootRoute
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof DashboardImport
     }
   }
 }
 
 // Create and export the route tree
 
+interface DashboardRouteChildren {
+  DashboardFacilitiesRoute: typeof DashboardFacilitiesRoute
+  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardFacilitiesRoute: DashboardFacilitiesRoute,
+  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/booking': typeof BookingRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/example': typeof ExampleRoute
   '/facilities': typeof FacilitiesRoute
-  '/facility': typeof FacilityRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
-  '/dashboard/dashboard': typeof DashboardDashboardRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
-  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -241,34 +227,29 @@ export interface FileRoutesByTo {
   '/booking': typeof BookingRoute
   '/example': typeof ExampleRoute
   '/facilities': typeof FacilitiesRoute
-  '/facility': typeof FacilityRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
-  '/dashboard/dashboard': typeof DashboardDashboardRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
-  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
   '/booking': typeof BookingRoute
+  '/dashboard': typeof DashboardRouteWithChildren
   '/example': typeof ExampleRoute
   '/facilities': typeof FacilitiesRoute
-  '/facility': typeof FacilityRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
-  '/dashboard/bookings': typeof DashboardBookingsRoute
-  '/dashboard/dashboard': typeof DashboardDashboardRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
   '/dashboard/profile': typeof DashboardProfileRoute
-  '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 
 export interface FileRouteTypes {
@@ -276,85 +257,68 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/booking'
+    | '/dashboard'
     | '/example'
     | '/facilities'
-    | '/facility'
     | '/home'
     | '/login'
     | '/logout'
     | '/register'
-    | '/dashboard/bookings'
-    | '/dashboard/dashboard'
     | '/dashboard/facilities'
     | '/dashboard/profile'
-    | '/dashboard/reports'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/booking'
     | '/example'
     | '/facilities'
-    | '/facility'
     | '/home'
     | '/login'
     | '/logout'
     | '/register'
-    | '/dashboard/bookings'
-    | '/dashboard/dashboard'
     | '/dashboard/facilities'
     | '/dashboard/profile'
-    | '/dashboard/reports'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
     | '/booking'
+    | '/dashboard'
     | '/example'
     | '/facilities'
-    | '/facility'
     | '/home'
     | '/login'
     | '/logout'
     | '/register'
-    | '/dashboard/bookings'
-    | '/dashboard/dashboard'
     | '/dashboard/facilities'
     | '/dashboard/profile'
-    | '/dashboard/reports'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookingRoute: typeof BookingRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   ExampleRoute: typeof ExampleRoute
   FacilitiesRoute: typeof FacilitiesRoute
-  FacilityRoute: typeof FacilityRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
   LogoutRoute: typeof LogoutRoute
   RegisterRoute: typeof RegisterRoute
-  DashboardBookingsRoute: typeof DashboardBookingsRoute
-  DashboardDashboardRoute: typeof DashboardDashboardRoute
-  DashboardFacilitiesRoute: typeof DashboardFacilitiesRoute
-  DashboardProfileRoute: typeof DashboardProfileRoute
-  DashboardReportsRoute: typeof DashboardReportsRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookingRoute: BookingRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   ExampleRoute: ExampleRoute,
   FacilitiesRoute: FacilitiesRoute,
-  FacilityRoute: FacilityRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
   LogoutRoute: LogoutRoute,
   RegisterRoute: RegisterRoute,
-  DashboardBookingsRoute: DashboardBookingsRoute,
-  DashboardDashboardRoute: DashboardDashboardRoute,
-  DashboardFacilitiesRoute: DashboardFacilitiesRoute,
-  DashboardProfileRoute: DashboardProfileRoute,
-  DashboardReportsRoute: DashboardReportsRoute,
 }
 
 export const routeTree = rootRoute
@@ -369,18 +333,13 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/booking",
+        "/dashboard",
         "/example",
         "/facilities",
-        "/facility",
         "/home",
         "/login",
         "/logout",
-        "/register",
-        "/dashboard/bookings",
-        "/dashboard/dashboard",
-        "/dashboard/facilities",
-        "/dashboard/profile",
-        "/dashboard/reports"
+        "/register"
       ]
     },
     "/": {
@@ -389,14 +348,19 @@ export const routeTree = rootRoute
     "/booking": {
       "filePath": "booking.jsx"
     },
+    "/dashboard": {
+      "filePath": "dashboard.jsx",
+      "children": [
+        "/dashboard/facilities",
+        "/dashboard/profile",
+        "/dashboard/"
+      ]
+    },
     "/example": {
       "filePath": "example.jsx"
     },
     "/facilities": {
       "filePath": "facilities.jsx"
-    },
-    "/facility": {
-      "filePath": "facility.jsx"
     },
     "/home": {
       "filePath": "home.jsx"
@@ -410,20 +374,17 @@ export const routeTree = rootRoute
     "/register": {
       "filePath": "register.jsx"
     },
-    "/dashboard/bookings": {
-      "filePath": "dashboard/bookings.jsx"
-    },
-    "/dashboard/dashboard": {
-      "filePath": "dashboard/dashboard.jsx"
-    },
     "/dashboard/facilities": {
-      "filePath": "dashboard/facilities.jsx"
+      "filePath": "dashboard/facilities.jsx",
+      "parent": "/dashboard"
     },
     "/dashboard/profile": {
-      "filePath": "dashboard/profile.jsx"
+      "filePath": "dashboard/profile.jsx",
+      "parent": "/dashboard"
     },
-    "/dashboard/reports": {
-      "filePath": "dashboard/reports.jsx"
+    "/dashboard/": {
+      "filePath": "dashboard/index.jsx",
+      "parent": "/dashboard"
     }
   }
 }

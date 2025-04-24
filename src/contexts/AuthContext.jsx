@@ -3,32 +3,34 @@ import { createContext, useContext, useState, useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLogin, setIsLogin] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check for token on mount
-    const token = localStorage.getItem("token");
-    if (token) {
-      // You can add a function to validate token here
-      setIsLogin(true);
+    // Check for user data on mount
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing stored user:", error);
+      }
     }
   }, []);
 
   const login = (token, userData) => {
     localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
-    setIsLogin(true);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
-    setIsLogin(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isLogin, user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
