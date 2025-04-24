@@ -16,9 +16,11 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("Main dashboar");
     const fetchUserData = async () => {
       try {
         const user = await api.getCurrentUser();
+        console.log("User", user);
         setUserRole(user.role);
       } catch (error) {
         navigate({ to: "/login" });
