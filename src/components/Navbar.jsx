@@ -1,6 +1,5 @@
-// Updated Navbar with AuthContext Integration
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   FaBars,
   FaTimes,
@@ -14,16 +13,11 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
-
-  const { isLogin, user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
+    document.body.style.overflow = isMobileMenuOpen ? "hidden" : "unset";
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -33,24 +27,64 @@ const Navbar = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
-  const getNavItems = () => {
-    if (isLogin) {
-      return [
-        { to: "/", label: "Home" },
-        { to: "/facilities", label: "Facilities" },
-        { to: "/dashboard", label: "Dashboard" },
-      ];
-    }
-    return [
-      { to: "/login", label: "Login" },
-      { to: "/register", label: "Sign Up" },
-    ];
+  const toggleProfile = () => {
+    setIsProfileOpen(!isProfileOpen);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate({ to: "/login" });
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate({ to: "/" });
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMobileMenuOpen && !event.target.closest(".mobile-menu")) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [isMobileMenuOpen]);
+
+  const getNavItems = useCallback(() => {
+    // Navigation items for logged-out users
+    if (!user) {
+      return [
+        { label: "Home", path: "/" },
+        { label: "Facilities", path: "/facilities" },
+        { label: "Login", path: "/login" },
+        { label: "Register", path: "/register" },
+      ];
+    }
+
+    // Base navigation items for logged-in users
+    const items = [
+      { label: "Home", path: "/" },
+      { label: "Facilities", path: "/facilities" },
+      { label: "Bookings", path: "/bookings" },
+    ];
+
+    // Add role-specific items
+    if (user.role === "admin") {
+      items.push(
+        { label: "Users", path: "/dashboard/users" },
+        { label: "Settings", path: "/dashboard/settings" }
+      );
+    } else if (user.role === "manager") {
+      items.push(
+        { label: "My Facilities", path: "/dashboard/facilities" },
+        { label: "Reports", path: "/dashboard/reports" }
+      );
+    }
+
+    return items;
+  }, [user]);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm">
@@ -58,8 +92,9 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link to="/" className="text-2xl font-bold text-[#4a6bff]">
-              EZBook
+            <Link to="/" className="font-bold">
+              <span className="text-[#4a6bff] text-3xl">EZ</span>
+              <span className="text-[#FFC800] text-2xl">booking</span>
             </Link>
           </div>
 
@@ -67,25 +102,33 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8">
             {getNavItems().map((item) => (
               <Link
-                key={item.to}
-                to={item.to}
+                key={item.path}
+                to={item.path}
                 className="text-gray-700 hover:text-[#4a6bff] px-3 py-2 rounded-md text-sm font-medium"
               >
                 {item.label}
               </Link>
             ))}
-            {isLogin && user && (
+            {user && (
               <div className="relative">
                 <button
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  onClick={toggleProfile}
                   className="flex items-center space-x-2 text-gray-700 hover:text-[#4a6bff]"
                 >
                   <img
                     className="h-8 w-8 rounded-full"
-                    src={user.avatar || "https://ui-avatars.com/api/?name=User"}
-                    alt={user.name || "User"}
+                    src={
+                      user.avatar ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                        user.name || user.email || "User"
+                      )}`
+                    }
+                    alt={user.name || user.email || "User"}
                   />
-                  <span className="text-sm font-medium">Profile</span>
+                  <span className="text-sm font-medium">
+                    {user.name || user.email || "User"}
+                  </span>
+                  <FaChevronDown className="h-4 w-4" />
                 </button>
                 {isProfileOpen && (
                   <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
@@ -129,7 +172,7 @@ const Navbar = () => {
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 bg-white z-50">
+        <div className="md:hidden fixed inset-0 bg-white z-50 mobile-menu">
           <div className="pt-5 pb-6 px-4">
             <div className="flex items-center justify-between">
               <div className="flex-shrink-0">
@@ -148,23 +191,32 @@ const Navbar = () => {
               <nav className="grid gap-y-8">
                 {getNavItems().map((item) => (
                   <Link
-                    key={item.to}
-                    to={item.to}
+                    key={item.path}
+                    to={item.path}
                     className="text-gray-700 hover:text-[#4a6bff] px-3 py-2 rounded-md text-base font-medium"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                    }}
                   >
                     {item.label}
                   </Link>
                 ))}
-                {isLogin && (
+                {user && (
                   <>
                     <Link
                       to="/dashboard/profile"
                       className="text-gray-700 hover:text-[#4a6bff] px-3 py-2 rounded-md text-base font-medium"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                      }}
                     >
                       Profile
                     </Link>
                     <button
-                      onClick={handleLogout}
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
                       className="flex items-center text-gray-700 hover:text-[#4a6bff] px-3 py-2 rounded-md text-base font-medium"
                     >
                       <FaSignOutAlt className="mr-2" />
