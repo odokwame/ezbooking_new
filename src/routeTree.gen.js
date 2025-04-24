@@ -4,12 +4,34 @@
 // Import Routes
 import { Route as rootRoute } from "./routes/__root";
 import { Route as indexRoute } from "./routes/index";
+import { Route as RegisterImport } from "./routes/register";
+import { Route as LogoutImport } from "./routes/logout";
+import { Route as LoginImport } from "./routes/login";
 import { Route as dashboardRoute } from "./routes/dashboard";
 import { Route as dashboardIndexRoute } from "./routes/dashboard/index";
 import { Route as dashboardFacilitiesRoute } from "./routes/dashboard/facilities";
 import { Route as dashboardProfileRoute } from "./routes/dashboard/profile";
 
 // Configure the routes
+
+const RegisterRoute = RegisterImport.update({
+  id: "/register",
+  path: "/register",
+  getParentRoute: () => rootRoute,
+});
+
+const LogoutRoute = LogoutImport.update({
+  id: "/logout",
+  path: "/logout",
+  getParentRoute: () => rootRoute,
+});
+
+const LoginRoute = LoginImport.update({
+  id: "/login",
+  path: "/login",
+  getParentRoute: () => rootRoute,
+});
+
 Object.assign(indexRoute.options, {
   path: "/",
   getParentRoute: () => rootRoute,
@@ -39,6 +61,9 @@ Object.assign(dashboardProfileRoute.options, {
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   dashboardRoute.addChildren([
+    RegisterRoute,
+    LogoutRoute,
+    LoginRoute,
     dashboardIndexRoute,
     dashboardFacilitiesRoute,
     dashboardProfileRoute,
@@ -58,6 +83,11 @@ export const routeManifest = {
   },
   "/register": {
     filePath: "routes/register.jsx",
+    parent: "/",
+    children: [],
+  },
+  "/logout": {
+    filePath: "routes/logout.jsx",
     parent: "/",
     children: [],
   },

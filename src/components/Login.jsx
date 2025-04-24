@@ -46,7 +46,6 @@ const Login = () => {
 
     try {
       const response = await api.login(formData);
-      login(response.token, response.user);
       navigate({ to: "/dashboard" });
     } catch (error) {
       setErrorMessage(

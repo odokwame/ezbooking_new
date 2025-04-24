@@ -42,12 +42,12 @@ export const api = {
     }
   },
 
-  async login(credentials) {
+  async login(loginData) {
     try {
       const response = await fetch(`${API_BASE_URL}/api/user/login`, {
         method: "POST",
         headers: getHeaders(),
-        body: JSON.stringify(credentials),
+        body: JSON.stringify(loginData),
       });
 
       const data = await response.json();
@@ -57,8 +57,8 @@ export const api = {
       }
 
       if (data.user && data.token) {
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('token', data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
         return {
           user: data.user,
           token: data.token,
@@ -130,6 +130,113 @@ export const api = {
       if (error.name === "TypeError" && error.message === "Failed to fetch") {
         throw new Error("Network error. Please check your connection.");
       }
+      throw error;
+    }
+  },
+
+  async getFacilities() {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/facility`, {
+        headers: getHeaders(token),
+      });
+
+      const data = await response.json();
+
+      // Ensure we return an array, even if empty
+      if (!Array.isArray(data)) {
+        // If data.facilities exists and is an array, return that
+        if (data.facilities && Array.isArray(data.facilities)) {
+          return data.facilities;
+        }
+        // If data is an object but not an array, return empty array
+        return [];
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Get facilities error:", error);
+      // Return empty array on error to prevent mapping errors
+      return [];
+    }
+  },
+
+  async createFacility(facilityData) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/facility`, {
+        method: "POST",
+        headers: getHeaders(),
+        body: JSON.stringify(facilityData),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Create facility error:", error);
+      throw error;
+    }
+  },
+
+  async updateFacility(facilityId, facilityData) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/facility/${facilityId}`,
+        {
+          method: "PUT",
+          headers: getHeaders(),
+          body: JSON.stringify(facilityData),
+        }
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Update facility error:", error);
+      throw error;
+    }
+  },
+
+  async deleteFacility(facilityId) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/facility/${facilityId}`,
+        {
+          method: "DELETE",
+          headers: getHeaders(),
+        }
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Delete facility error:", error);
+      throw error;
+    }
+  },
+
+  async getFacilityById(facilityId) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/facility/${facilityId}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get facility by ID error:", error);
+      throw error;
+    }
+  },
+
+  async getFacilityByType(facilityType) {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/facility/type/${facilityType}`
+      );
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get facility by type error:", error);
       throw error;
     }
   },
