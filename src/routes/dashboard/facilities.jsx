@@ -18,12 +18,10 @@ function Facilities() {
   useEffect(() => {
     const fetchFacilities = async () => {
       const facilities = await api.getFacilities();
-      console.log("Fetched facilities", facilities);
       setFacilities(facilities);
-      console.log(facilities);
     };
     fetchFacilities();
-  }, []);
+  }, [facilities]);
 
   if (!facilities) {
     return <div>Loading...</div>;
