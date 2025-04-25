@@ -30,9 +30,19 @@ const FacilityForm = ({ facility, onSubmit, onCancel }) => {
     }));
   };
 
+  const availabilityMap = {
+    available: true,
+    unavailable: false,
+    maintenance: false,
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const formDataWithBooleanAvailability = {
+      ...formData,
+      availability: availabilityMap[formData.availability],
+    };
+    onSubmit(formDataWithBooleanAvailability);
   };
 
   return (

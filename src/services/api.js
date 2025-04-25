@@ -3,7 +3,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Use full URL in produ
 // Common headers for all requests
 const getHeaders = (token = null) => {
   const headers = {
-    "Content-Type": "application/json",
     Accept: "application/json",
   };
 
@@ -167,10 +166,28 @@ export const api = {
 
   async createFacility(facilityData) {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const formData = new FormData();
+      for (const key in facilityData) {
+        if (key === 'pictures') {
+          facilityData.pictures.forEach(picture => {
+            formData.append('pictures', picture);
+          });
+        } else {
+          formData.append(key, facilityData[key]);
+        }
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/facility`, {
         method: "POST",
-        headers: getHeaders(),
-        body: JSON.stringify(facilityData),
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
+        body: formData,
       });
       const data = await response.json();
       return data;

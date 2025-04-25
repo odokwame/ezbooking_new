@@ -48,11 +48,11 @@ const FacilityCard = ({ facility, onEdit, onDelete }) => {
             <FaMapMarkerAlt className="mr-2" />
             {location}
           </div>
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-redgray-600">
             <FaDollarSign className="mr-2" />
             {price}
           </div>
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-red-600">
             <FaClock className="mr-2" />
             {availability}
           </div>

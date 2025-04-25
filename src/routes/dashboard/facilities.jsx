@@ -18,7 +18,9 @@ function Facilities() {
   useEffect(() => {
     const fetchFacilities = async () => {
       const facilities = await api.getFacilities();
+      console.log("Fetched facilities", facilities);
       setFacilities(facilities);
+      console.log(facilities);
     };
     fetchFacilities();
   }, []);
@@ -37,8 +39,11 @@ function Facilities() {
       );
     } else {
       // Add new facility
+
+      formData.createdBy = user.id;
+      // formData.managerId = user.id;
       const newFacility = await api.createFacility(formData);
-      newFacility.managerId = user.id;
+      console.log("New facility created", newFacility);
       setFacilities((prev) => [...prev, newFacility]);
     }
     setIsFormOpen(false);
@@ -47,7 +52,7 @@ function Facilities() {
 
   const handleEdit = (facility) => {
     const editingFacility = facilities.find((f) => f.id === facility.id);
-    if (editingFacility.managerId !== user.id) {
+    if (editingFacility.createdBy !== user.id) {
       return;
     }
     setEditingFacility(editingFacility);
@@ -92,9 +97,9 @@ function Facilities() {
               No facilities found
             </div>
           ) : (
-            facilities.map((facility) => (
+            facilities.map((facility, index) => (
               <FacilityCard
-                key={facility.id}
+                key={index}
                 facility={facility}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
