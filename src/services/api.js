@@ -4,6 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; // Use full URL in produ
 const getHeaders = (token = null) => {
   const headers = {
     Accept: "application/json",
+    "Content-Type": "application/json",
   };
 
   if (token) {
@@ -15,7 +16,6 @@ const getHeaders = (token = null) => {
 
 export const api = {
   async register(userData) {
-    console.log("Our API base url", API_BASE_URL);
     console.log("Our user data", userData);
     try {
       const response = await fetch(`${API_BASE_URL}/api/user/register`, {
@@ -28,6 +28,10 @@ export const api = {
       console.log("Our data", data);
 
       if (!response.ok) {
+        // If we have validation errors, throw them
+        if (data.errors && Array.isArray(data.errors)) {
+          throw new Error(data.errors.join(", "));
+        }
         throw new Error(data.message || "Registration failed");
       }
 
@@ -173,9 +177,9 @@ export const api = {
 
       const formData = new FormData();
       for (const key in facilityData) {
-        if (key === 'pictures') {
-          facilityData.pictures.forEach(picture => {
-            formData.append('pictures', picture);
+        if (key === "pictures") {
+          facilityData.pictures.forEach((picture) => {
+            formData.append("pictures", picture);
           });
         } else {
           formData.append(key, facilityData[key]);
@@ -185,7 +189,7 @@ export const api = {
       const response = await fetch(`${API_BASE_URL}/api/facility`, {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: formData,
       });

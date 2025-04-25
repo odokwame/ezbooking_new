@@ -77,9 +77,27 @@ const Registration = () => {
       }, 2000);
     } catch (error) {
       console.error("Registration error:", error);
-      setErrors({
-        submit: error.message || "Registration failed. Please try again.",
-      });
+      // Handle validation errors
+      if (error.message.includes(",")) {
+        const errorMessages = error.message.split(", ");
+        const newErrors = {};
+        errorMessages.forEach((msg) => {
+          if (msg.toLowerCase().includes("username")) {
+            newErrors.userName = msg;
+          } else if (msg.toLowerCase().includes("email")) {
+            newErrors.email = msg;
+          } else if (msg.toLowerCase().includes("password")) {
+            newErrors.password = msg;
+          } else {
+            newErrors.submit = msg;
+          }
+        });
+        setErrors(newErrors);
+      } else {
+        setErrors({
+          submit: error.message || "Registration failed. Please try again.",
+        });
+      }
     } finally {
       setIsSubmitting(false);
     }

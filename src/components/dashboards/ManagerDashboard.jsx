@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "../Card";
 import Button from "../Button";
 import {
@@ -7,9 +7,27 @@ import {
   FaUsers,
   FaChartLine,
 } from "react-icons/fa";
+import { api } from "../../services/api";
 
 const ManagerDashboard = () => {
   const [activeTab, setActiveTab] = useState("facilities");
+  const [totalFacilities, setTotalFacilities] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFacilities = async () => {
+      try {
+        const facilities = await api.getFacilities();
+        setTotalFacilities(facilities.length);
+      } catch (error) {
+        console.error("Error fetching facilities:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFacilities();
+  }, []);
 
   return (
     <div className="space-y-8">
@@ -41,7 +59,9 @@ const ManagerDashboard = () => {
                 <p className="text-sm font-medium text-gray-500">
                   Total Facilities
                 </p>
-                <p className="text-2xl font-semibold text-gray-900">5</p>
+                <p className="text-2xl font-semibold text-gray-900">
+                  {isLoading ? "Loading..." : totalFacilities}
+                </p>
               </div>
               <FaBuilding className="h-8 w-8 text-[#4a6bff]" />
             </div>
