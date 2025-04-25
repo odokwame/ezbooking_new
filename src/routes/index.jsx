@@ -10,7 +10,6 @@ export const Route = createFileRoute('/')({
 function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-gray-800">
-      
 
       {/* Hero Section */}
       <section className="bg-blue-50 py-20 text-center">
@@ -78,9 +77,7 @@ function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-blue-700 text-white py-4 text-center">
-        <p>&copy; {new Date().getFullYear()} EZBooking. All rights reserved.</p>
-      </footer>
+      
     </div>
   );
 }

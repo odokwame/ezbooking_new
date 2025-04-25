@@ -2,6 +2,7 @@ import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { AuthProvider } from "../contexts/AuthContext";
 import Navbar from "../components/Navbar";
 import NotFound from "../components/NotFound";
+import Footer from "../components/Footer";
 
 export const Route = createRootRoute({
   component: RootComponent,
@@ -14,6 +15,7 @@ function RootComponent() {
       <div className="min-h-screen">
         <Navbar />
         <Outlet />
+        <Footer />
       </div>
     </AuthProvider>
   );
