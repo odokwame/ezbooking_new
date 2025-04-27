@@ -9,12 +9,33 @@ function LandingPage() {
   return (
     <div className="min-h-screen bg-white text-gray-800">
       {/* Hero Section */}
-      <section className="bg-blue-50 py-20 text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-extrabold mb-4">
+      <section
+        className="group bg-blue-50 py-20 text-center relative overflow-hidden"
+        style={{
+          backgroundImage:
+            "url('https://res.cloudinary.com/ddsuwfx4o/image/upload/v1744992322/ezbook-api/facility-pictures/to-travel-1677347_640.jpg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        {/* Background overlay */}
+        <div className="absolute inset-0 bg-blue-900/60 transition duration-500 group-hover:bg-blue-900/40"></div>
+
+        {/* Optional: Another div for background zoom */}
+        <div
+          className="absolute inset-0 bg-center bg-cover scale-100 transition-transform duration-500 group-hover:scale-105"
+          style={{
+            backgroundImage:
+              "url('https://res.cloudinary.com/ddsuwfx4o/image/upload/v1744992322/ezbook-api/facility-pictures/to-travel-1677347_640.jpg.jpg')",
+            zIndex: "-1",
+          }}
+        ></div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <h2 className="text-4xl font-extrabold mb-4 text-white">
             Manage Your Hotels, Events & Facilities with Ease
           </h2>
-          <p className="text-lg mb-6 text-gray-600">
+          <p className="text-lg mb-6 text-gray-100">
             EZBooking streamlines bookings, improves coordination, and maximizes
             your revenue.
           </p>
@@ -26,6 +47,7 @@ function LandingPage() {
           </Link>
         </div>
       </section>
+
 
       {/* Features */}
       <section id="features" className="py-20 bg-white">

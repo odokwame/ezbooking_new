@@ -29,6 +29,10 @@ const ManagerDashboard = () => {
     fetchFacilities();
   }, []);
 
+  const navigateToAddFacilities = () => {
+  window.location.href = "/dashboard/facilities?add=true";
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
@@ -45,7 +49,7 @@ const ManagerDashboard = () => {
             </p>
           </div>
         </div>
-        <Button variant="primary" size="medium">
+        <Button variant="primary" size="medium" onClick={navigateToAddFacilities}>
           Add New Facility
         </Button>
       </div>

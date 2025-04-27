@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useLocation } from "@tanstack/react-router";
 import FacilityCard from "../../components/facilities/FacilityCard";
 import FacilityForm from "../../components/facilities/FacilityForm";
 import Button from "../../components/Button";
@@ -15,12 +15,22 @@ function Facilities() {
   const [editingFacility, setEditingFacility] = useState(null);
   const [facilities, setFacilities] = useState(null);
 
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search)
+  const add = queryParams.get("add")
+
+  console.log("add", add)
+
+
   useEffect(() => {
     const fetchFacilities = async () => {
       const facilities = await api.getFacilities();
       setFacilities(facilities);
     };
     fetchFacilities();
+
+    if(add) {setIsFormOpen(add)} else setIsFormOpen(false)
   }, [facilities]);
 
   if (!facilities) {
