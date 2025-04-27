@@ -20,8 +20,6 @@ function Facilities() {
   const queryParams = new URLSearchParams(location.search)
   const add = queryParams.get("add")
 
-  console.log("add", add)
-
 
   useEffect(() => {
     const fetchFacilities = async () => {
@@ -30,32 +28,44 @@ function Facilities() {
     };
     fetchFacilities();
 
-    if(add) {setIsFormOpen(add)} else setIsFormOpen(false)
-  }, [facilities]);
+    // Only set form open if add parameter is present and we're not already editing
+    if (add && !editingFacility) {
+      setIsFormOpen(true);
+    }
+  }, [facilities, add]); // Remove facilities from dependency array to prevent infinite loop
 
   if (!facilities) {
     return <div>Loading...</div>;
   }
 
   const handleSubmit = async (formData) => {
-    if (editingFacility) {
-      // Update existing facility
-      setFacilities((prev) =>
-        prev.map((f) =>
-          f.id === editingFacility.id ? { ...formData, id: f.id } : f
-        )
-      );
-    } else {
-      // Add new facility
-
-      formData.createdBy = user.id;
-      // formData.managerId = user.id;
-      const newFacility = await api.createFacility(formData);
-      console.log("New facility created", newFacility);
-      setFacilities((prev) => [...prev, newFacility]);
+    try {
+      if (editingFacility) {
+        // Update existing facility
+        const updatedFacility = await api.updateFacility(editingFacility.id, {
+          ...formData,
+          id: editingFacility.id,
+          createdBy: editingFacility.createdBy,
+        });
+        
+        // Update the facilities state with the new data
+        setFacilities((prev) =>
+          prev.map((f) =>
+            f.id === editingFacility.id ? updatedFacility : f
+          )
+        );
+      } else {
+        // Add new facility
+        formData.createdBy = user.id;
+        const newFacility = await api.createFacility(formData);
+        setFacilities((prev) => [...prev, newFacility]);
+      }
+      setIsFormOpen(false);
+      setEditingFacility(null);
+    } catch (error) {
+      console.error("Error submitting facility:", error);
+      // You might want to show an error message to the user here
     }
-    setIsFormOpen(false);
-    setEditingFacility(null);
   };
 
   const handleEdit = (facility) => {
@@ -67,8 +77,14 @@ function Facilities() {
     setIsFormOpen(true);
   };
 
-  const handleDelete = (id) => {
-    setFacilities((prev) => prev.filter((f) => f.id !== id));
+  const handleDelete = async (id) => {
+    try {
+      await api.deleteFacility(id);
+      setFacilities((prev) => prev.filter((f) => f.id !== id));
+    } catch (error) {
+      console.error("Error deleting facility:", error);
+      // You might want to show an error message to the user here
+    }
   };
 
   return (

@@ -41,6 +41,7 @@ const FacilityForm = ({ facility, onSubmit, onCancel }) => {
     const formDataWithBooleanAvailability = {
       ...formData,
       availability: availabilityMap[formData.availability],
+      price: parseFloat(formData.price),
     };
     onSubmit(formDataWithBooleanAvailability);
   };

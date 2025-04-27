@@ -203,14 +203,31 @@ export const api = {
 
   async updateFacility(facilityId, facilityData) {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      // Create a new object without the id field
+      const { id, ...updateData } = facilityData;
+
       const response = await fetch(
         `${API_BASE_URL}/api/facility/${facilityId}`,
         {
           method: "PUT",
-          headers: getHeaders(),
-          body: JSON.stringify(facilityData),
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updateData),
         }
       );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update facility");
+      }
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -221,11 +238,16 @@ export const api = {
 
   async deleteFacility(facilityId) {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
       const response = await fetch(
         `${API_BASE_URL}/api/facility/${facilityId}`,
         {
           method: "DELETE",
-          headers: getHeaders(),
+          headers: getHeaders(token),
         }
       );
       const data = await response.json();
