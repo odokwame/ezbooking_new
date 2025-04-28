@@ -11,6 +11,9 @@ import { Route as dashboardRoute } from "./routes/dashboard";
 import { Route as dashboardIndexRoute } from "./routes/dashboard/index";
 import { Route as dashboardFacilitiesRoute } from "./routes/dashboard/facilities";
 import { Route as dashboardProfileRoute } from "./routes/dashboard/profile";
+import { Route as dashboardMyBookingsRoute } from './routes/dashboard/my-bookings'
+import { Route as FacilitiesImport } from './routes/facilities'
+
 
 // Configure the routes
 
@@ -57,6 +60,18 @@ Object.assign(dashboardProfileRoute.options, {
   getParentRoute: () => dashboardRoute,
 });
 
+Object.assign(dashboardMyBookingsRoute.options, {
+  path: "/my-bookings",
+  getParentRoute: () => dashboardRoute,
+});
+
+
+const FacilitiesRoute = FacilitiesImport.update({
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => rootRoute,
+})
+
 // Create and export the route tree
 export const routeTree = rootRoute.addChildren([
   indexRoute,
@@ -67,6 +82,8 @@ export const routeTree = rootRoute.addChildren([
     dashboardIndexRoute,
     dashboardFacilitiesRoute,
     dashboardProfileRoute,
+    dashboardMyBookingsRoute,
+    FacilitiesImport
   ]),
 ]);
 
@@ -91,6 +108,11 @@ export const routeManifest = {
     parent: "/",
     children: [],
   },
+  "/facilities": {
+    filePath: "routes/facilities",
+    parent: "/",
+    children: []
+  }
 };
 
 /* ROUTE_MANIFEST_START

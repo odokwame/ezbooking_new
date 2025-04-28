@@ -70,7 +70,9 @@ const Navbar = () => {
 
   // Navigation items based on authentication status
   const navItems = user
-    ? [{ label: "Home", path: "/" }]
+    ? [{ label: "Home", path: "/" },
+      {label: "Facilities", path: "/facilities"}
+    ]
     : [
         { label: "Login", path: "/login" },
         { label: "Register", path: "/register" },

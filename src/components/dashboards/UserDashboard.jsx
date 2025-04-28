@@ -1,14 +1,79 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Card from "../Card";
 import Button from "../Button";
-import { FaCalendarAlt, FaHistory, FaUser } from "react-icons/fa";
+import { FaCalendarAlt, FaHistory, FaUser, FaBuilding } from "react-icons/fa";
 import { useAuth } from "../../contexts/AuthContext";
+import { api } from "../../services/api";
+import { useNavigate } from "@tanstack/react-router";
+import NewBookingModal from "../bookings/NewBookingModal";
+
 const UserDashboard = () => {
   const [activeTab, setActiveTab] = useState("bookings");
+  const [facilities, setFacilities] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [upcomingBookings, setUpcomingBookings] = useState(0);
+  const [totalBookings, setTotalBookings] = useState(0);
+  const [showBookingModal, setShowBookingModal] = useState(false);
   const { user } = useAuth();
-  console.log("Currently logged in user:", user);
+  const navigate = useNavigate();
 
-  
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      // Fetch facilities
+      const facilitiesData = await api.getFacilities();
+      setFacilities(Array.isArray(facilitiesData) ? facilitiesData : []);
+
+      // Fetch user bookings
+      const userBookings = await api.getUserBookings();
+      const bookingsArray = Array.isArray(userBookings) ? userBookings : [];
+      
+      // Calculate upcoming bookings
+      const upcoming = bookingsArray.filter(booking => {
+        if (!booking.date) return false;
+        const bookingDate = new Date(booking.date);
+        return bookingDate > new Date() && booking.status === 'confirmed';
+      }).length;
+      
+      setUpcomingBookings(upcoming);
+      setTotalBookings(bookingsArray.length);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setFacilities([]);
+      setUpcomingBookings(0);
+      setTotalBookings(0);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && user.role === "user") {
+      fetchData();
+    }
+  }, [user]);
+
+  const handleFacilityClick = (facilityId) => {
+    navigate({ to: "/dashboard/my-bookings", search: { facilityId } });
+  };
+
+  const handleBookingSuccess = () => {
+    fetchData(); // Refresh data after successful booking
+  };
+
+  if (!user || user.role !== "user") {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-red-600">Unauthorized Access</h1>
+            <p className="mt-2 text-gray-600">You don't have permission to view this page.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
@@ -19,14 +84,18 @@ const UserDashboard = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Welcome, User
+                Welcome, {user.name || 'User'}
               </h1>
               <p className="text-sm text-gray-500">
                 Manage your bookings and profile
               </p>
             </div>
           </div>
-          <Button variant="primary" size="medium">
+          <Button 
+            variant="primary" 
+            size="medium"
+            onClick={() => setShowBookingModal(true)}
+          >
             New Booking
           </Button>
         </div>
@@ -40,7 +109,7 @@ const UserDashboard = () => {
                   <p className="text-sm font-medium text-gray-500">
                     Upcoming Bookings
                   </p>
-                  <p className="text-2xl font-semibold text-gray-900">3</p>
+                  <p className="text-2xl font-semibold text-gray-900">{upcomingBookings}</p>
                 </div>
                 <FaCalendarAlt className="h-8 w-8 text-[#4a6bff]" />
               </div>
@@ -54,7 +123,7 @@ const UserDashboard = () => {
                   <p className="text-sm font-medium text-gray-500">
                     Total Bookings
                   </p>
-                  <p className="text-2xl font-semibold text-gray-900">12</p>
+                  <p className="text-2xl font-semibold text-gray-900">{totalBookings}</p>
                 </div>
                 <FaHistory className="h-8 w-8 text-[#4a6bff]" />
               </div>
@@ -68,7 +137,7 @@ const UserDashboard = () => {
                   <p className="text-sm font-medium text-gray-500">
                     Points Earned
                   </p>
-                  <p className="text-2xl font-semibold text-gray-900">150</p>
+                  <p className="text-2xl font-semibold text-gray-900">{user.points || 0}</p>
                 </div>
                 <FaUser className="h-8 w-8 text-[#4a6bff]" />
               </div>
@@ -76,56 +145,56 @@ const UserDashboard = () => {
           </Card>
         </div>
 
-        {/* Recent Bookings */}
+        {/* Facilities Section */}
         <div className="mt-8">
           <Card variant="elevated">
             <Card.Header>
               <h2 className="text-lg font-medium text-gray-900">
-                Recent Bookings
+                Available Facilities
               </h2>
             </Card.Header>
             <Card.Body>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Facility
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Time
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    <tr>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        Tennis Court
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        2024-03-15
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        14:00 - 15:00
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                          Confirmed
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              {loading ? (
+                <div className="text-center py-4">Loading facilities...</div>
+              ) : facilities.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">No facilities available</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {facilities.map((facility) => (
+                    <div
+                      key={facility.id}
+                      onClick={() => handleFacilityClick(facility.id)}
+                      className="cursor-pointer p-4 border rounded-lg hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="h-10 w-10 rounded-full bg-[#4a6bff] flex items-center justify-center">
+                          <FaBuilding className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-gray-900">{facility.name}</h3>
+                          <p className="text-sm text-gray-500">{facility.type}</p>
+                        </div>
+                      </div>
+                      {facility.description && (
+                        <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+                          {facility.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card.Body>
           </Card>
         </div>
+
+        {/* New Booking Modal */}
+        {showBookingModal && (
+          <NewBookingModal
+            onClose={() => setShowBookingModal(false)}
+            onSuccess={handleBookingSuccess}
+          />
+        )}
       </div>
     </div>
   );

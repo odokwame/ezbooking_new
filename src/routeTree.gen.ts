@@ -22,6 +22,7 @@ import { Route as BookingImport } from './routes/booking'
 import { Route as IndexImport } from './routes/index'
 import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardProfileImport } from './routes/dashboard/profile'
+import { Route as DashboardMyBookingsImport } from './routes/dashboard/my-bookings'
 import { Route as DashboardFacilitiesImport } from './routes/dashboard/facilities'
 
 // Create/Update Routes
@@ -89,6 +90,12 @@ const DashboardIndexRoute = DashboardIndexImport.update({
 const DashboardProfileRoute = DashboardProfileImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
+const DashboardMyBookingsRoute = DashboardMyBookingsImport.update({
+  id: '/my-bookings',
+  path: '/my-bookings',
   getParentRoute: () => DashboardRoute,
 } as any)
 
@@ -172,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFacilitiesImport
       parentRoute: typeof DashboardImport
     }
+    '/dashboard/my-bookings': {
+      id: '/dashboard/my-bookings'
+      path: '/my-bookings'
+      fullPath: '/dashboard/my-bookings'
+      preLoaderRoute: typeof DashboardMyBookingsImport
+      parentRoute: typeof DashboardImport
+    }
     '/dashboard/profile': {
       id: '/dashboard/profile'
       path: '/profile'
@@ -193,12 +207,14 @@ declare module '@tanstack/react-router' {
 
 interface DashboardRouteChildren {
   DashboardFacilitiesRoute: typeof DashboardFacilitiesRoute
+  DashboardMyBookingsRoute: typeof DashboardMyBookingsRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFacilitiesRoute: DashboardFacilitiesRoute,
+  DashboardMyBookingsRoute: DashboardMyBookingsRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
@@ -218,6 +234,7 @@ export interface FileRoutesByFullPath {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
+  '/dashboard/my-bookings': typeof DashboardMyBookingsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -232,6 +249,7 @@ export interface FileRoutesByTo {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
+  '/dashboard/my-bookings': typeof DashboardMyBookingsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard': typeof DashboardIndexRoute
 }
@@ -248,6 +266,7 @@ export interface FileRoutesById {
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
+  '/dashboard/my-bookings': typeof DashboardMyBookingsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
@@ -265,6 +284,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/dashboard/facilities'
+    | '/dashboard/my-bookings'
     | '/dashboard/profile'
     | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
@@ -278,6 +298,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/dashboard/facilities'
+    | '/dashboard/my-bookings'
     | '/dashboard/profile'
     | '/dashboard'
   id:
@@ -292,6 +313,7 @@ export interface FileRouteTypes {
     | '/logout'
     | '/register'
     | '/dashboard/facilities'
+    | '/dashboard/my-bookings'
     | '/dashboard/profile'
     | '/dashboard/'
   fileRoutesById: FileRoutesById
@@ -352,6 +374,7 @@ export const routeTree = rootRoute
       "filePath": "dashboard.jsx",
       "children": [
         "/dashboard/facilities",
+        "/dashboard/my-bookings",
         "/dashboard/profile",
         "/dashboard/"
       ]
@@ -376,6 +399,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/facilities": {
       "filePath": "dashboard/facilities.jsx",
+      "parent": "/dashboard"
+    },
+    "/dashboard/my-bookings": {
+      "filePath": "dashboard/my-bookings.jsx",
       "parent": "/dashboard"
     },
     "/dashboard/profile": {

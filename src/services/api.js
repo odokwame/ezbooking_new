@@ -283,4 +283,114 @@ export const api = {
       throw error;
     }
   },
+
+  async getUserBookings() {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/bookings/mine`,
+        {
+          headers: getHeaders(token),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch user bookings");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Get user bookings error:", error);
+      return [];
+    }
+  },
+
+  async createBooking(bookingData) {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/bookings`, {
+        method: "POST",
+        headers: getHeaders(token),
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to create booking");
+      }
+
+      const data = await response.json();
+      console.log("Booking created")
+      return data;
+    } catch (error) {
+      console.error("Create booking error:", error);
+      throw error;
+    }
+  },
+
+  async updateBooking(bookingId, bookingData) {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/bookings/${bookingId}`,
+        {
+          method: "PUT",
+          headers: getHeaders(token),
+          body: JSON.stringify(bookingData),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update booking");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Update booking error:", error);
+      throw error;
+    }
+  },
+
+  async deleteBooking(bookingId) {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/bookings/${bookingId}`,
+        {
+          method: "DELETE",
+          headers: getHeaders(token),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete booking");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Delete booking error:", error);
+      throw error;
+    }
+  },
 };
