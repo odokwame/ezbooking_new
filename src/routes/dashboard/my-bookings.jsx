@@ -3,8 +3,9 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect } from "react";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
-import { FaCalendarAlt, FaClock, FaBuilding, FaTrash, FaEdit } from "react-icons/fa";
+import { FaCalendarAlt, FaClock, FaBuilding, FaTrash } from "react-icons/fa";
 import { api } from "../../services/api";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute('/dashboard/my-bookings')({
   component: MyBookings,
@@ -15,19 +16,25 @@ function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBookings = async () => {
       try {
         setLoading(true);
         const data = await api.getUserBookings();
-        // Ensure we're working with an array
-        console.log("Loaded bookins -> ", data)
-        setBookings(Array.isArray(data) ? data : []);
+        // Ensure we're working with an array and sort by date
+        const bookingsArray = Array.isArray(data) ? data : [];
+        const sortedBookings = bookingsArray.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateB - dateA; // Sort in descending order (newest first)
+        });
+        setBookings(sortedBookings);
       } catch (error) {
         console.error("Error fetching bookings:", error);
         setError("Failed to load bookings");
-        setBookings([]); // Set empty array on error
+        setBookings([]);
       } finally {
         setLoading(false);
       }
@@ -65,6 +72,17 @@ function MyBookings() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return 'No date';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
   if (!user || user.role !== "user") {
     return (
       <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -81,11 +99,20 @@ function MyBookings() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">My Bookings</h1>
-          <p className="mt-2 text-sm text-gray-500">
-            View and manage your facility bookings
-          </p>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">My Bookings</h1>
+            <p className="mt-2 text-sm text-gray-500">
+              View and manage your facility bookings
+            </p>
+          </div>
+          <Button
+            variant="primary"
+            size="medium"
+            onClick={() => navigate({ to: "/dashboard/facilities" })}
+          >
+            Book New Facility
+          </Button>
         </div>
 
         {error && (
@@ -108,6 +135,15 @@ function MyBookings() {
             <p className="mt-2 text-sm text-gray-500">
               You haven't made any bookings yet.
             </p>
+            <div className="mt-6">
+              <Button
+                variant="primary"
+                size="medium"
+                onClick={() => navigate({ to: "/dashboard/facilities" })}
+              >
+                Book a Facility
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
@@ -135,7 +171,7 @@ function MyBookings() {
                     <div className="flex items-center space-x-2">
                       <FaCalendarAlt className="h-5 w-5 text-gray-400" />
                       <span className="text-sm text-gray-600">
-                        {booking.date ? new Date(booking.date).toLocaleDateString() : 'No date'}
+                        {formatDate(booking.date)}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">

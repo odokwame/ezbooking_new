@@ -329,7 +329,7 @@ export const api = {
       }
 
       const data = await response.json();
-      console.log("Booking created")
+      console.log("Booking created -> ", data)
       return data;
     } catch (error) {
       console.error("Create booking error:", error);
