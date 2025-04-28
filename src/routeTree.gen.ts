@@ -24,6 +24,7 @@ import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as DashboardProfileImport } from './routes/dashboard/profile'
 import { Route as DashboardMyBookingsImport } from './routes/dashboard/my-bookings'
 import { Route as DashboardFacilitiesImport } from './routes/dashboard/facilities'
+import { Route as DashboardAuthContextImport } from './routes/dashboard/AuthContext'
 
 // Create/Update Routes
 
@@ -105,6 +106,12 @@ const DashboardFacilitiesRoute = DashboardFacilitiesImport.update({
   getParentRoute: () => DashboardRoute,
 } as any)
 
+const DashboardAuthContextRoute = DashboardAuthContextImport.update({
+  id: '/AuthContext',
+  path: '/AuthContext',
+  getParentRoute: () => DashboardRoute,
+} as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -172,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/AuthContext': {
+      id: '/dashboard/AuthContext'
+      path: '/AuthContext'
+      fullPath: '/dashboard/AuthContext'
+      preLoaderRoute: typeof DashboardAuthContextImport
+      parentRoute: typeof DashboardImport
+    }
     '/dashboard/facilities': {
       id: '/dashboard/facilities'
       path: '/facilities'
@@ -206,6 +220,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 interface DashboardRouteChildren {
+  DashboardAuthContextRoute: typeof DashboardAuthContextRoute
   DashboardFacilitiesRoute: typeof DashboardFacilitiesRoute
   DashboardMyBookingsRoute: typeof DashboardMyBookingsRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
@@ -213,6 +228,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAuthContextRoute: DashboardAuthContextRoute,
   DashboardFacilitiesRoute: DashboardFacilitiesRoute,
   DashboardMyBookingsRoute: DashboardMyBookingsRoute,
   DashboardProfileRoute: DashboardProfileRoute,
@@ -233,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
+  '/dashboard/AuthContext': typeof DashboardAuthContextRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
   '/dashboard/my-bookings': typeof DashboardMyBookingsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -248,6 +265,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
+  '/dashboard/AuthContext': typeof DashboardAuthContextRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
   '/dashboard/my-bookings': typeof DashboardMyBookingsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -265,6 +283,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/logout': typeof LogoutRoute
   '/register': typeof RegisterRoute
+  '/dashboard/AuthContext': typeof DashboardAuthContextRoute
   '/dashboard/facilities': typeof DashboardFacilitiesRoute
   '/dashboard/my-bookings': typeof DashboardMyBookingsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -283,6 +302,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/register'
+    | '/dashboard/AuthContext'
     | '/dashboard/facilities'
     | '/dashboard/my-bookings'
     | '/dashboard/profile'
@@ -297,6 +317,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/register'
+    | '/dashboard/AuthContext'
     | '/dashboard/facilities'
     | '/dashboard/my-bookings'
     | '/dashboard/profile'
@@ -312,6 +333,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/logout'
     | '/register'
+    | '/dashboard/AuthContext'
     | '/dashboard/facilities'
     | '/dashboard/my-bookings'
     | '/dashboard/profile'
@@ -373,6 +395,7 @@ export const routeTree = rootRoute
     "/dashboard": {
       "filePath": "dashboard.jsx",
       "children": [
+        "/dashboard/AuthContext",
         "/dashboard/facilities",
         "/dashboard/my-bookings",
         "/dashboard/profile",
@@ -396,6 +419,10 @@ export const routeTree = rootRoute
     },
     "/register": {
       "filePath": "register.jsx"
+    },
+    "/dashboard/AuthContext": {
+      "filePath": "dashboard/AuthContext.jsx",
+      "parent": "/dashboard"
     },
     "/dashboard/facilities": {
       "filePath": "dashboard/facilities.jsx",
